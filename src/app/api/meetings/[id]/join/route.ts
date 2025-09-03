@@ -14,7 +14,7 @@ export async function POST(
 ) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const session = await getServerSession(authOptions as any) as { user: { id: string } } | null;
+    const session = await getServerSession(authOptions as any) as { user: { id: string; globalRole: string } } | null;
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -22,6 +22,14 @@ export async function POST(
     const resolvedParams = await params;
     const body = await request.json();
     const validatedData = joinMeetingSchema.parse(body);
+
+    // Validate role based on user's global role
+    if (validatedData.role === "reviewer" && session.user.globalRole !== "manager") {
+      return NextResponse.json(
+        { error: "Only managers can join as reviewers" },
+        { status: 403 }
+      );
+    }
 
     // Check if user is already a participant
     const existingParticipant = await prisma.meetingParticipant.findUnique({
