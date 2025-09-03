@@ -17,7 +17,7 @@ async function main() {
     update: {},
     create: {
       email: 'admin@example.com',
-      name: 'Admin User',
+      name: 'John The Admin',
       passwordHash: adminPassword,
       globalRole: 'ADMIN',
     },
@@ -28,7 +28,7 @@ async function main() {
     update: {},
     create: {
       email: 'spv@example.com',
-      name: 'Supervisor User',
+      name: 'Hiroshi The Supervisor',
       passwordHash: spvPassword,
       globalRole: 'SPV',
     },
@@ -39,7 +39,7 @@ async function main() {
     update: {},
     create: {
       email: 'reviewer@example.com',
-      name: 'Reviewer User',
+      name: 'Kenju The Reviewer',
       passwordHash: reviewerPassword,
       globalRole: 'REVIEWER',
     },
@@ -50,7 +50,7 @@ async function main() {
     update: {},
     create: {
       email: 'user@example.com',
-      name: 'Regular User',
+      name: 'Shino The User',
       passwordHash: userPassword,
       globalRole: 'USER',
     },
