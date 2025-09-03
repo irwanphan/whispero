@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Plus, Calendar, Users, CheckSquare } from "lucide-react";
+import { IconArrowLeft, IconPlus, IconCalendar, IconUsers, IconCheckSquare } from "@tabler/icons-react";
 import { formatDateTime, getStatusColor, getRoleColor } from "@/lib/utils";
 
 interface Meeting {
@@ -145,7 +145,7 @@ export default function MeetingDetail({ params }: { params: Promise<{ id: string
               onClick={() => router.push("/dashboard")}
               className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mr-4"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <IconArrowLeft className="h-4 w-4" />
               <span>Back</span>
             </button>
             <div>
@@ -167,7 +167,7 @@ export default function MeetingDetail({ params }: { params: Promise<{ id: string
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4 text-gray-400" />
+                  <IconCalendar className="h-4 w-4 text-gray-400" />
                   <span className="text-sm text-gray-600">{formatDateTime(meeting.date)}</span>
                 </div>
                 
@@ -205,7 +205,7 @@ export default function MeetingDetail({ params }: { params: Promise<{ id: string
                     onClick={() => router.push(`/meetings/${meeting.id}/ttfu/new`)}
                     className="flex items-center space-x-2 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    <Plus className="h-4 w-4" />
+                    <IconPlus className="h-4 w-4" />
                     <span>Add TTFU</span>
                   </button>
                 </div>

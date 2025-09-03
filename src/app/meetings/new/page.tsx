@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ArrowLeft, Plus, X } from "lucide-react";
+import { IconArrowLeft, IconPlus, IconX } from "@tabler/icons-react";
 
 const createMeetingSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -62,6 +62,7 @@ export default function NewMeeting() {
   } = useForm<CreateMeetingForm>({
     resolver: zodResolver(createMeetingSchema),
     defaultValues: {
+      title: `Weekly Team Meeting on ${new Date().toLocaleTimeString()}`,
       participants: [],
     },
   });
@@ -135,7 +136,7 @@ export default function NewMeeting() {
               onClick={() => router.push("/dashboard")}
               className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mr-4"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <IconArrowLeft className="h-4 w-4" />
               <span>Back</span>
             </button>
             <h1 className="text-2xl font-bold text-gray-900">Create New Meeting</h1>
@@ -154,13 +155,22 @@ export default function NewMeeting() {
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700">
                   Title
                 </label>
-                <input
-                  {...register("title")}
-                  type="text"
-                  id="title"
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter meeting title"
-                />
+                <div className="relative">
+                  <input
+                    {...register("title")}
+                    type="text"
+                    id="title"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter meeting title"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setValue("title", "")}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  >
+                    <IconX className="h-4 w-4" />
+                  </button>
+                </div>
                 {errors.title && (
                   <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
                 )}
@@ -205,7 +215,7 @@ export default function NewMeeting() {
                 onClick={addParticipant}
                 className="flex items-center space-x-2 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                <Plus className="h-4 w-4" />
+                <IconPlus className="h-4 w-4" />
                 <span>Add Participant</span>
               </button>
             </div>
@@ -233,7 +243,7 @@ export default function NewMeeting() {
                     <div className="w-32">
                       <select
                         value={participant.role}
-                        onChange={(e) => updateParticipant(index, "role", e.target.value as any)}
+                        onChange={(e) => updateParticipant(index, "role", e.target.value as "spv" | "reviewer" | "participant")}
                         className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       >
                         <option value="participant">Participant</option>
@@ -246,7 +256,7 @@ export default function NewMeeting() {
                       onClick={() => removeParticipant(index)}
                       className="text-red-600 hover:text-red-800"
                     >
-                      <X className="h-4 w-4" />
+                      <IconX className="h-4 w-4" />
                     </button>
                   </div>
                 ))}
