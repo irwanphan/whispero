@@ -174,7 +174,7 @@ export default function NewEvidence({ params }: { params: Promise<{ id: string }
             {/* Description */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                Description (Optional)
+                Description
               </label>
               <textarea
                 {...register("description")}

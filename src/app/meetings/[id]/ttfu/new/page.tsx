@@ -247,7 +247,7 @@ export default function NewTTFU({ params }: { params: Promise<{ id: string }> })
 
             <div>
               <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700">
-                Due Date (Optional)
+                Due Date
               </label>
               <input
                 {...register("dueDate")}

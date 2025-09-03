@@ -229,7 +229,7 @@ export default function NewMeeting() {
 
               <div>
                 <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-                  Notes (Optional)
+                  Notes
                 </label>
                 <textarea
                   {...register("notes")}
