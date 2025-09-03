@@ -230,9 +230,10 @@ export default function TTFUDetail({ params }: { params: Promise<{ id: string }>
                         <span className="text-sm text-gray-500">
                           by {evidence.submittedBy.name}
                         </span>
-                        {/* Review Button - Only show for reviewers/admins */}
+                        {/* Review Button - Only show for reviewers/admins who haven't reviewed yet */}
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                        {((session?.user as any)?.globalRole === "REVIEWER" || (session?.user as any)?.globalRole === "ADMIN") && (
+                        {((session?.user as any)?.globalRole === "REVIEWER" || (session?.user as any)?.globalRole === "ADMIN") && 
+                          !evidence.reviews.some((review: any) => review.reviewer.id === (session?.user as any)?.id) && (
                           <button
                             onClick={() => router.push(`/ttfu/${ttfu.id}/evidence/${evidence.id}/review`)}
                             className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 text-sm font-medium"
