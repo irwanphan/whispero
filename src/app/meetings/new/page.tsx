@@ -12,6 +12,8 @@ import { IconArrowLeft, IconPlus, IconX } from "@tabler/icons-react";
 const createMeetingSchema = z.object({
   title: z.string().min(1, "Title is required"),
   date: z.string().min(1, "Date is required"),
+  startTime: z.string().min(1, "Start time is required"),
+  endTime: z.string().min(1, "End time is required"),
   notes: z.string().optional(),
   participants: z.array(z.object({
     userId: z.string(),
@@ -62,7 +64,10 @@ export default function NewMeeting() {
   } = useForm<CreateMeetingForm>({
     resolver: zodResolver(createMeetingSchema),
     defaultValues: {
-      title: `Weekly Team Meeting on ${new Date().toLocaleTimeString()}`,
+      title: `Weekly Team Meeting on ${new Date().toLocaleDateString()}`,
+      date: new Date().toISOString().split('T')[0],
+      startTime: "09:00",
+      endTime: "10:00",
       participants: [],
     },
   });
@@ -178,17 +183,48 @@ export default function NewMeeting() {
 
               <div>
                 <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                  Date & Time
+                  Date
                 </label>
                 <input
                   {...register("date")}
-                  type="datetime-local"
+                  type="date"
                   id="date"
                   className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
                 {errors.date && (
                   <p className="mt-1 text-sm text-red-600">{errors.date.message}</p>
                 )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+                    Start Time
+                  </label>
+                  <input
+                    {...register("startTime")}
+                    type="time"
+                    id="startTime"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  {errors.startTime && (
+                    <p className="mt-1 text-sm text-red-600">{errors.startTime.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+                    End Time
+                  </label>
+                  <input
+                    {...register("endTime")}
+                    type="time"
+                    id="endTime"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  {errors.endTime && (
+                    <p className="mt-1 text-sm text-red-600">{errors.endTime.message}</p>
+                  )}
+                </div>
               </div>
 
               <div>

@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { IconArrowLeft, IconPlus, IconCalendar, IconUsers, IconCheckSquare } from "@tabler/icons-react";
-import { formatDateTime, getStatusColor, getRoleColor } from "@/lib/utils";
+import { formatDateTime, formatTime, formatDateRange, getStatusColor, getRoleColor } from "@/lib/utils";
 
 interface Meeting {
   id: string;
   title: string;
   date: string;
+  startTime: string;
+  endTime: string;
   notes?: string;
   createdBy: {
     id: string;
@@ -151,7 +153,7 @@ export default function MeetingDetail({ params }: { params: Promise<{ id: string
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{meeting.title}</h1>
               <p className="text-sm text-gray-600">
-                {formatDateTime(meeting.date)} • Created by {meeting.createdBy.name}
+                {formatDateTime(meeting.date)} • {formatDateRange(meeting.startTime, meeting.endTime)} • Created by {meeting.createdBy.name}
               </p>
             </div>
           </div>
@@ -168,7 +170,7 @@ export default function MeetingDetail({ params }: { params: Promise<{ id: string
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <IconCalendar className="h-4 w-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">{formatDateTime(meeting.date)}</span>
+                  <span className="text-sm text-gray-600">{formatDateTime(meeting.date)} • {formatDateRange(meeting.startTime, meeting.endTime)}</span>
                 </div>
                 
                 {meeting.notes && (
