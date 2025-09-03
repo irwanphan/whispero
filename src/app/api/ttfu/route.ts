@@ -8,9 +8,9 @@ const createTTFUSchema = z.object({
   meetingId: z.string(),
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  assigneeId: z.string(),
-  reviewerId: z.string(),
-  dueDate: z.string().datetime().optional(),
+  assigneeId: z.string().optional(),
+  reviewerId: z.string().optional(),
+  dueDate: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -120,13 +120,51 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createTTFUSchema.parse(body);
 
+    // Get current user info for auto assignment
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, globalRole: true }
+    });
+
+    // Auto assignment logic
+    let assigneeId = validatedData.assigneeId;
+    let reviewerId = validatedData.reviewerId;
+
+    if (!assigneeId || !reviewerId) {
+      if (currentUser?.globalRole === "SPV" || currentUser?.globalRole === "USER") {
+        // Supervisor and User become assignee
+        assigneeId = currentUser.id;
+        
+        // Find a reviewer or admin for reviewer
+        const reviewer = await prisma.user.findFirst({
+          where: {
+            globalRole: { in: ["REVIEWER", "ADMIN"] }
+          },
+          select: { id: true }
+        });
+        reviewerId = reviewer?.id || currentUser.id;
+      } else {
+        // For reviewer/admin, they can assign to themselves
+        assigneeId = assigneeId || currentUser?.id || "";
+        reviewerId = reviewerId || currentUser?.id || "";
+      }
+    }
+
+    // Validate that we have valid IDs
+    if (!assigneeId || !reviewerId) {
+      return NextResponse.json(
+        { error: "Unable to assign TTFU. No valid assignee or reviewer found." },
+        { status: 400 }
+      );
+    }
+
     const ttfu = await prisma.tTFU.create({
       data: {
         meetingId: validatedData.meetingId,
         title: validatedData.title,
         description: validatedData.description,
-        assigneeId: validatedData.assigneeId,
-        reviewerId: validatedData.reviewerId,
+        assigneeId: assigneeId!,
+        reviewerId: reviewerId!,
         dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
       },
       include: {
@@ -162,15 +200,26 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("Validation error:", error.issues);
       return NextResponse.json(
         { error: "Validation error", details: error.issues },
         { status: 400 }
       );
     }
 
+    // Handle database connection errors
+    if (error instanceof Error && error.message.includes("Can't reach database server")) {
+      console.error("Database connection error:", error.message);
+      return NextResponse.json(
+        { error: "Database connection error. Please try again later." },
+        { status: 503 }
+      );
+    }
+
     console.error("Error creating TTFU:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

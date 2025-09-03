@@ -103,17 +103,23 @@ export default function NewTTFU({ params }: { params: Promise<{ id: string }> })
       let assigneeId = "";
       let reviewerId = "";
       
-      if (currentUserRole === "supervisor" || currentUserRole === "user") {
+      if (currentUserRole === "SPV" || currentUserRole === "USER") {
         // Supervisor and User become assignee
         assigneeId = currentUser?.id || "";
         
-        // Find a manager or admin for reviewer
-        const reviewer = users.find(user => user.globalRole === "manager" || user.globalRole === "admin");
+        // Find a reviewer or admin for reviewer
+        const reviewer = users.find(user => user.globalRole === "REVIEWER" || user.globalRole === "ADMIN");
         reviewerId = reviewer?.id || "";
       } else {
-        // For manager/admin, they can assign to anyone
+        // For reviewer/admin, they can assign to themselves
         assigneeId = currentUser?.id || "";
         reviewerId = currentUser?.id || "";
+      }
+
+      // Validate that we have valid IDs
+      if (!assigneeId || !reviewerId) {
+        alert("Unable to assign TTFU. Please try again.");
+        return;
       }
 
       const response = await fetch("/api/ttfu", {
@@ -133,12 +139,18 @@ export default function NewTTFU({ params }: { params: Promise<{ id: string }> })
         const result = await response.json();
         router.push(`/ttfu/${result.data.id}`);
       } else {
-        const error = await response.json();
-        alert(error.error || "Failed to create TTFU");
+        const errorData = await response.json();
+        console.error("TTFU creation error:", errorData);
+        
+        if (response.status === 503) {
+          alert("Database connection error. Please try again later.");
+        } else {
+          alert(errorData.error || "Failed to create TTFU");
+        }
       }
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error) {
-        alert("An error occurred while creating the TTFU");
+    } catch (error) {
+      console.error("TTFU creation error:", error);
+      alert("An error occurred while creating the TTFU");
     } finally {
       setIsSubmitting(false);
     }
@@ -228,8 +240,8 @@ export default function NewTTFU({ params }: { params: Promise<{ id: string }> })
               <h3 className="text-sm font-medium text-blue-900 mb-2">Auto Assignment</h3>
               <div className="text-sm text-blue-700 space-y-1">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                <p>• <strong>Assignee:</strong> {users.find(user => user.id === (session?.user as any)?.id)?.name || "You"} ({(session?.user as any)?.globalRole || "user"})</p>
-                <p>• <strong>Reviewer:</strong> {users.find(user => user.globalRole === "manager" || user.globalRole === "admin")?.name || "Manager/Admin"} (Manager/Admin)</p>
+                <p>• <strong>Assignee:</strong> {users.find(user => user.id === (session?.user as any)?.id)?.name || "You"} ({(session?.user as any)?.globalRole || "USER"})</p>
+                <p>• <strong>Reviewer:</strong> {users.find(user => user.globalRole === "REVIEWER" || user.globalRole === "ADMIN")?.name || "Reviewer/Admin"} (Reviewer/Admin)</p>
               </div>
             </div>
 
