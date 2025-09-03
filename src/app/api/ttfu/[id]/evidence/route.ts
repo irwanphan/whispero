@@ -9,6 +9,14 @@ const createEvidenceSchema = z.object({
   url: z.string().url().optional(),
   filePath: z.string().optional(),
   description: z.string().optional(),
+}).refine((data) => {
+  if (data.type === "link") {
+    return data.url && data.url.length > 0;
+  }
+  return true;
+}, {
+  message: "URL is required for link evidence",
+  path: ["url"],
 });
 
 export async function POST(
