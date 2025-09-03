@@ -2,10 +2,10 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, use } from "react";
+import { useEffect, use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { IconArrowLeft, IconPlus, IconCalendar, IconUser, IconSquareCheck, IconFileText } from "@tabler/icons-react";
-import { formatDateTime, getStatusColor, getRoleColor } from "@/lib/utils";
+import { formatDateTime, getStatusColor } from "@/lib/utils";
 
 interface TTFU {
   id: string;

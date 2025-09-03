@@ -48,7 +48,10 @@ async function joinMeeting(meetingId: string, role: string) {
     },
     body: JSON.stringify({ role }),
   });
-  if (!response.ok) throw new Error("Failed to join meeting");
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to join meeting");
+  }
   return response.json();
 }
 
@@ -77,8 +80,10 @@ export default function JoinMeeting() {
       await joinMeeting(meetingId, role);
       refetch(); // Refresh the list
       alert("Successfully joined the meeting!");
-    } catch {
-      alert("Failed to join meeting. Please try again.");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to join meeting. Please try again.";
+      alert(errorMessage);
     } finally {
       setJoiningMeeting(null);
     }
@@ -186,7 +191,10 @@ export default function JoinMeeting() {
                         >
                           <option value="">Join as...</option>
                           <option value="participant">Participant</option>
-                          <option value="reviewer">Reviewer</option>
+                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                          {(session?.user as any)?.globalRole === "manager" && (
+                            <option value="reviewer">Reviewer</option>
+                          )}
                         </select>
                         {joiningMeeting === meeting.id && (
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
