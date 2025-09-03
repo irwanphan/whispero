@@ -126,11 +126,8 @@ export default function ReviewEvidence({
   // Check if user is reviewer or admin
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const canReview = (session?.user as any)?.globalRole === "REVIEWER" || (session?.user as any)?.globalRole === "ADMIN";
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const isAssignedReviewer = ttfu.data.reviewer.id === (session?.user as any)?.id;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if (!canReview || (!isAssignedReviewer && (session?.user as any)?.globalRole !== "ADMIN")) {
+  if (!canReview) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

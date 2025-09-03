@@ -52,13 +52,8 @@ export async function POST(
       );
     }
 
-    // Check if user is the assigned reviewer for this TTFU
-    if (evidence.ttfu.reviewerId !== session.user.id && session.user.globalRole !== "ADMIN") {
-      return NextResponse.json(
-        { error: "You are not the assigned reviewer for this TTFU" },
-        { status: 403 }
-      );
-    }
+    // Allow any REVIEWER or ADMIN to review evidence (not just the assigned reviewer)
+    // This gives more flexibility for review process
 
     // Check if review already exists
     const existingReview = await prisma.review.findFirst({
