@@ -49,16 +49,24 @@ export const authOptions = {
     strategy: "jwt" as const
   },
   callbacks: {
-    async jwt({ token, user }: { token: any; user: any }) {
+    async jwt({ token, user }: { 
+      token: Record<string, unknown>; 
+      user: { globalRole: string } | null 
+    }) {
       if (user) {
         token.globalRole = user.globalRole;
       }
       return token;
     },
-    async session({ session, token }: { session: any; token: any }) {
+    async session({ session, token }: { 
+      session: { user: { name?: string | null; email?: string | null; image?: string | null } }; 
+      token: { sub?: string; globalRole?: string } | null 
+    }) {
       if (token) {
-        session.user.id = token.sub!;
-        session.user.globalRole = token.globalRole;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (session.user as any).id = token.sub!;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (session.user as any).globalRole = token.globalRole;
       }
       return session;
     }
