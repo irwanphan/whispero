@@ -112,8 +112,8 @@ model TTFU {
   dueDate      DateTime?
 
   meeting      Meeting    @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  assignee     User       @relation("TTFU_Assignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  reviewer     User       @relation("TTFU_Reviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  assignee     User       @relation("TTFU_Assignee", fields: [assigneeId], references: [id], onDelete: Cascade)
+  reviewer     User       @relation("TTFU_Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
   evidences    Evidence[]
 
   createdAt    DateTime   @default(now())
@@ -135,7 +135,7 @@ model Evidence {
   submittedById String
 
   ttfu         TTFU         @relation(fields: [ttfuId], references: [id], onDelete: Cascade)
-  submittedBy  User         @relation("Evidence_Submitter", fields: [submittedById], references: [id], onDelete: SetNull)
+  submittedBy  User         @relation("Evidence_Submitter", fields: [submittedById], references: [id], onDelete: Cascade)
   reviews      Review[]
 
   createdAt    DateTime     @default(now())
@@ -152,7 +152,7 @@ model Review {
   comment     String?
 
   evidence    Evidence     @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
-  reviewer    User         @relation("Review_Reviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewer    User         @relation("Review_Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
 
   createdAt   DateTime     @default(now())
 
@@ -170,7 +170,7 @@ model AuditLog {
   metadata  Json?
   createdAt DateTime @default(now())
 
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([entity, entityId])
 }
