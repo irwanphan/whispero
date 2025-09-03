@@ -7,13 +7,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { IconArrowLeft, IconPlus } from "@tabler/icons-react";
+import { IconArrowLeft } from "@tabler/icons-react";
 
 const createTTFUSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  assigneeId: z.string().min(1, "Assignee is required"),
-  reviewerId: z.string().min(1, "Reviewer is required"),
   dueDate: z.string().optional(),
 });
 
@@ -84,23 +82,40 @@ export default function NewTTFU({ params }: { params: Promise<{ id: string }> })
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<CreateTTFUForm>({
     resolver: zodResolver(createTTFUSchema),
     defaultValues: {
       title: "",
       description: "",
-      assigneeId: "",
-      reviewerId: "",
       dueDate: "",
     },
   });
 
-  const assigneeId = watch("assigneeId");
-
   const onSubmit = async (data: CreateTTFUForm) => {
     setIsSubmitting(true);
     try {
+      // Auto-assign based on user role
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const currentUser = users.find(user => user.id === (session?.user as any)?.id);
+      const currentUserRole = currentUser?.globalRole || "user";
+      
+      // Find assignee and reviewer based on role
+      let assigneeId = "";
+      let reviewerId = "";
+      
+      if (currentUserRole === "supervisor" || currentUserRole === "user") {
+        // Supervisor and User become assignee
+        assigneeId = currentUser?.id || "";
+        
+        // Find a manager or admin for reviewer
+        const reviewer = users.find(user => user.globalRole === "manager" || user.globalRole === "admin");
+        reviewerId = reviewer?.id || "";
+      } else {
+        // For manager/admin, they can assign to anyone
+        assigneeId = currentUser?.id || "";
+        reviewerId = currentUser?.id || "";
+      }
+
       const response = await fetch("/api/ttfu", {
         method: "POST",
         headers: {
@@ -109,6 +124,8 @@ export default function NewTTFU({ params }: { params: Promise<{ id: string }> })
         body: JSON.stringify({
           ...data,
           meetingId: resolvedParams.id,
+          assigneeId,
+          reviewerId,
         }),
       });
 
@@ -119,8 +136,9 @@ export default function NewTTFU({ params }: { params: Promise<{ id: string }> })
         const error = await response.json();
         alert(error.error || "Failed to create TTFU");
       }
-    } catch (error) {
-      alert("An error occurred while creating the TTFU");
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        alert("An error occurred while creating the TTFU");
     } finally {
       setIsSubmitting(false);
     }
@@ -195,7 +213,7 @@ export default function NewTTFU({ params }: { params: Promise<{ id: string }> })
 
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                Description (Optional)
+                Description
               </label>
               <textarea
                 {...register("description")}
@@ -206,49 +224,12 @@ export default function NewTTFU({ params }: { params: Promise<{ id: string }> })
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="assigneeId" className="block text-sm font-medium text-gray-700">
-                  Assignee
-                </label>
-                <select
-                  {...register("assigneeId")}
-                  id="assigneeId"
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select Assignee</option>
-                  {users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.name} ({user.globalRole})
-                    </option>
-                  ))}
-                </select>
-                {errors.assigneeId && (
-                  <p className="mt-1 text-sm text-red-600">{errors.assigneeId.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="reviewerId" className="block text-sm font-medium text-gray-700">
-                  Reviewer
-                </label>
-                <select
-                  {...register("reviewerId")}
-                  id="reviewerId"
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select Reviewer</option>
-                  {users
-                    .filter((user) => user.globalRole === "manager")
-                    .map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name} (Manager)
-                      </option>
-                    ))}
-                </select>
-                {errors.reviewerId && (
-                  <p className="mt-1 text-sm text-red-600">{errors.reviewerId.message}</p>
-                )}
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+              <h3 className="text-sm font-medium text-blue-900 mb-2">Auto Assignment</h3>
+              <div className="text-sm text-blue-700 space-y-1">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p>• <strong>Assignee:</strong> {users.find(user => user.id === (session?.user as any)?.id)?.name || "You"} ({(session?.user as any)?.globalRole || "user"})</p>
+                <p>• <strong>Reviewer:</strong> {users.find(user => user.globalRole === "manager" || user.globalRole === "admin")?.name || "Manager/Admin"} (Manager/Admin)</p>
               </div>
             </div>
 
