@@ -24,6 +24,20 @@ export function formatDateTime(date: Date | string) {
   });
 }
 
+export function formatTime(date: Date | string) {
+  const d = new Date(date);
+  return d.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+export function formatDateRange(startTime: Date | string, endTime: Date | string) {
+  const start = formatTime(startTime);
+  const end = formatTime(endTime);
+  return `${start} - ${end}`;
+}
+
 export function getStatusColor(status: string) {
   switch (status) {
     case "OPEN":
