@@ -110,7 +110,7 @@ export default function NewMeeting() {
         alert(error.error || "Failed to create meeting");
       }
     } catch (error) {
-      alert("An error occurred while creating the meeting");
+      alert(`An error occurred while creating the meeting, ${error}`);
     } finally {
       setIsSubmitting(false);
     }
