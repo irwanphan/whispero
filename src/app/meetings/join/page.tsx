@@ -4,8 +4,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { IconArrowLeft, IconUsers, IconCalendar, IconCheckSquare } from "@tabler/icons-react";
-import { formatDateTime, formatDateRange, getStatusColor } from "@/lib/utils";
+import { IconArrowLeft, IconUsers, IconCalendar, IconSquareCheck } from "@tabler/icons-react";
+import { formatDateTime, formatDateRange } from "@/lib/utils";
 
 interface Meeting {
   id: string;
@@ -77,7 +77,7 @@ export default function JoinMeeting() {
       await joinMeeting(meetingId, role);
       refetch(); // Refresh the list
       alert("Successfully joined the meeting!");
-    } catch (error) {
+    } catch {
       alert("Failed to join meeting. Please try again.");
     } finally {
       setJoiningMeeting(null);
@@ -85,7 +85,7 @@ export default function JoinMeeting() {
   };
 
   const isUserInMeeting = (meeting: Meeting) => {
-    return meeting.participants.some(p => p.user.id === session?.user?.id);
+    return meeting.participants.some(p => p.user.id === (session?.user as { id: string })?.id);
   };
 
   if (status === "loading" || isLoading) {
@@ -147,7 +147,7 @@ export default function JoinMeeting() {
                         <span>{meeting.participants.length} participants</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <IconCheckSquare className="h-4 w-4" />
+                        <IconSquareCheck className="h-4 w-4" />
                         <span>{meeting.ttfus.length} TTFUs</span>
                       </div>
                     </div>

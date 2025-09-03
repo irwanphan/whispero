@@ -4,8 +4,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { IconArrowLeft, IconPlus, IconCalendar, IconUsers, IconCheckSquare } from "@tabler/icons-react";
-import { formatDateTime, formatTime, formatDateRange, getStatusColor, getRoleColor } from "@/lib/utils";
+import { IconArrowLeft, IconPlus, IconCalendar } from "@tabler/icons-react";
+import { formatDateTime, formatDateRange, getStatusColor, getRoleColor } from "@/lib/utils";
 
 interface Meeting {
   id: string;
