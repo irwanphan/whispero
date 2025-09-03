@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -49,7 +49,7 @@ export default function SignIn() {
       }
     } catch (error) {
       setError("root", {
-        message: "An error occurred. Please try again.",
+        message: `An error occurred. Please try again. ${error}`,
       });
     } finally {
       setIsLoading(false);
