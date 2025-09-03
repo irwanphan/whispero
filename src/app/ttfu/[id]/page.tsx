@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, use } from "react";
@@ -138,9 +140,23 @@ export default function TTFUDetail({ params }: { params: Promise<{ id: string }>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">{ttfu.title}</h2>
-              <span className={`px-3 py-1 text-sm rounded-full ${getStatusColor(ttfu.status)}`}>
-                {ttfu.status}
-              </span>
+              <div className="flex items-center space-x-2">
+                <span className={`px-3 py-1 text-sm rounded-full ${getStatusColor(ttfu.status)}`}>
+                  {ttfu.status}
+                </span>
+                {/* Update Status Button - Only show for assignee, reviewer, or admin */}
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {((session?.user as any)?.id === ttfu.assignee.id || 
+                  (session?.user as any)?.id === ttfu.reviewer.id || 
+                  (session?.user as any)?.globalRole === "ADMIN") && (
+                  <button
+                    onClick={() => router.push(`/ttfu/${ttfu.id}/status`)}
+                    className="bg-gray-600 text-white px-3 py-1 rounded-md hover:bg-gray-700 text-sm font-medium"
+                  >
+                    Update Status
+                  </button>
+                )}
+              </div>
             </div>
 
             {ttfu.description && (
@@ -210,9 +226,21 @@ export default function TTFUDetail({ params }: { params: Promise<{ id: string }>
                         <IconFileText className="h-4 w-4 text-gray-400" />
                         <span className="font-medium text-gray-900">{evidence.type}</span>
                       </div>
-                      <span className="text-sm text-gray-500">
-                        by {evidence.submittedBy.name}
-                      </span>
+                      <div className="flex items-center space-x-4">
+                        <span className="text-sm text-gray-500">
+                          by {evidence.submittedBy.name}
+                        </span>
+                        {/* Review Button - Only show for reviewers/admins */}
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {((session?.user as any)?.globalRole === "REVIEWER" || (session?.user as any)?.globalRole === "ADMIN") && (
+                          <button
+                            onClick={() => router.push(`/ttfu/${ttfu.id}/evidence/${evidence.id}/review`)}
+                            className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 text-sm font-medium"
+                          >
+                            Review Evidence
+                          </button>
+                        )}
+                      </div>
                     </div>
                     
                     {evidence.description && (
@@ -228,6 +256,19 @@ export default function TTFUDetail({ params }: { params: Promise<{ id: string }>
                       >
                         View Evidence
                       </a>
+                    )}
+
+                    {/* Review Status */}
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {((session?.user as any)?.globalRole === "REVIEWER" || (session?.user as any)?.globalRole === "ADMIN") && (
+                      <div className="mt-2">
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {evidence.reviews.some((review: any) => review.reviewer.id === (session?.user as any)?.id) ? (
+                          <span className="text-green-600 text-sm font-medium">✓ Reviewed by you</span>
+                        ) : (
+                          <span className="text-yellow-600 text-sm font-medium">⏳ Pending your review</span>
+                        )}
+                      </div>
                     )}
 
                     {/* Reviews */}
