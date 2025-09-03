@@ -12,7 +12,8 @@ import {
   IconSquareCheck, 
   IconLogout,
   IconSearch,
-  IconFilter
+  IconFilter,
+  IconEye
 } from "@tabler/icons-react";
 import { formatDateTime, getStatusColor } from "@/lib/utils";
 
@@ -230,22 +231,33 @@ export default function Dashboard() {
                   </select>
                 </div>
               </div>
-              <div className="flex space-x-2">
+                          <div className="flex space-x-2">
+              <button
+                onClick={() => router.push("/meetings/join")}
+                className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              >
+                <IconUsers className="h-4 w-4" />
+                <span>Join Meeting</span>
+              </button>
+              <button
+                onClick={() => router.push("/meetings/new")}
+                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                <IconPlus className="h-4 w-4" />
+                <span>New Meeting</span>
+              </button>
+              {/* Reviewer Dashboard Button - Only show for reviewers/admins */}
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {((session?.user as any)?.globalRole === "REVIEWER" || (session?.user as any)?.globalRole === "ADMIN") && (
                 <button
-                  onClick={() => router.push("/meetings/join")}
-                  className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  onClick={() => router.push("/reviewer/dashboard")}
+                  className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                 >
-                  <IconUsers className="h-4 w-4" />
-                  <span>Join Meeting</span>
+                  <IconEye className="h-4 w-4" />
+                  <span>Review Dashboard</span>
                 </button>
-                <button
-                  onClick={() => router.push("/meetings/new")}
-                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  <IconPlus className="h-4 w-4" />
-                  <span>New Meeting</span>
-                </button>
-              </div>
+              )}
+            </div>
             </div>
           </div>
         </div>
