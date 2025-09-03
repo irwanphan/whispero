@@ -9,7 +9,7 @@ import {
   IconPlus, 
   IconCalendar, 
   IconUsers, 
-  IconCheckSquare, 
+  IconSquareCheck, 
   IconLogout,
   IconSearch,
   IconFilter
@@ -175,7 +175,7 @@ export default function Dashboard() {
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
-              <IconCheckSquare className="h-8 w-8 text-yellow-600" />
+                                      <IconSquareCheck className="h-8 w-8 text-yellow-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Open TTFUs</p>
                 <p className="text-2xl font-bold text-gray-900">{statusCounts.open}</p>
@@ -184,7 +184,7 @@ export default function Dashboard() {
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
-              <IconCheckSquare className="h-8 w-8 text-orange-600" />
+                                      <IconSquareCheck className="h-8 w-8 text-orange-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">In Progress</p>
                 <p className="text-2xl font-bold text-gray-900">{statusCounts.inProgress}</p>
@@ -193,7 +193,7 @@ export default function Dashboard() {
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
-              <IconCheckSquare className="h-8 w-8 text-green-600" />
+                                      <IconSquareCheck className="h-8 w-8 text-green-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Completed</p>
                 <p className="text-2xl font-bold text-gray-900">{statusCounts.done}</p>
@@ -289,7 +289,7 @@ export default function Dashboard() {
                           <span>{meeting.participants.length} participants</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <IconCheckSquare className="h-4 w-4" />
+                          <IconSquareCheck className="h-4 w-4" />
                           <span>{meeting.ttfus.length} TTFUs</span>
                         </div>
                       </div>
