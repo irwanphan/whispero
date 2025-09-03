@@ -18,7 +18,7 @@ const createMeetingSchema = z.object({
   participants: z.array(z.object({
     userId: z.string(),
     role: z.enum(["spv", "reviewer", "participant"])
-  })).min(1, "At least one participant is required")
+  }))
 });
 
 type CreateMeetingForm = z.infer<typeof createMeetingSchema>;
@@ -257,7 +257,7 @@ export default function NewMeeting() {
             </div>
 
             {participants.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No participants added yet</p>
+              <p className="text-gray-500 text-center py-4">No participants added yet (optional)</p>
             ) : (
               <div className="space-y-4">
                 {participants.map((participant, index) => (
