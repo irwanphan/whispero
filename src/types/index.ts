@@ -80,7 +80,7 @@ export interface AuditLog {
   action: string;
   entity: string;
   entityId: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   createdAt: Date;
   user?: User;
 }
