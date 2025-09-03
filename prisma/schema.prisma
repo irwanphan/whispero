@@ -72,7 +72,9 @@ model User {
 model Meeting {
   id          String   @id @default(cuid())
   title       String
-  date        DateTime // meeting date-time
+  date        DateTime // meeting date
+  startTime   DateTime // meeting start time
+  endTime     DateTime // meeting end time
   notes       String?
   createdById String
   createdBy   User     @relation("MeetingsCreated", fields: [createdById], references: [id], onDelete: Restrict)
