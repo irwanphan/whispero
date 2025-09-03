@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Plus, Calendar, Users, CheckSquare } from "lucide-react";
 import { formatDateTime, getStatusColor, getRoleColor } from "@/lib/utils";
@@ -57,10 +57,11 @@ async function fetchMeeting(id: string) {
   return response.json();
 }
 
-export default function MeetingDetail({ params }: { params: { id: string } }) {
+export default function MeetingDetail({ params }: { params: Promise<{ id: string }> }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("all");
+  const resolvedParams = use(params);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -70,8 +71,8 @@ export default function MeetingDetail({ params }: { params: { id: string } }) {
   }, [session, status, router]);
 
   const { data: meetingData, isLoading, error } = useQuery({
-    queryKey: ["meeting", params.id],
-    queryFn: () => fetchMeeting(params.id),
+    queryKey: ["meeting", resolvedParams.id],
+    queryFn: () => fetchMeeting(resolvedParams.id),
   });
 
   const meeting: Meeting = meetingData?.data;
