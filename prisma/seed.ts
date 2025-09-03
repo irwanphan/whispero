@@ -60,7 +60,9 @@ async function main() {
   const meeting = await prisma.meeting.create({
     data: {
       title: 'Weekly Team Meeting',
-      date: new Date('2024-01-15T10:00:00Z'),
+      date: new Date('2024-01-15'),
+      startTime: new Date('2024-01-15T10:00:00Z'),
+      endTime: new Date('2024-01-15T11:00:00Z'),
       notes: 'Discussion about project progress and upcoming tasks',
       createdById: spv.id,
       participants: {
