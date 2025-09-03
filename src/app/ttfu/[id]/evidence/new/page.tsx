@@ -3,7 +3,7 @@
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,6 +23,7 @@ export default function NewEvidence({ params }: { params: Promise<{ id: string }
   const { data: session, status } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const evidenceType = "link"; // Default to link only
+  const queryClient = useQueryClient();
 
   const resolvedParams = use(params);
 
@@ -67,6 +68,8 @@ export default function NewEvidence({ params }: { params: Promise<{ id: string }
 
       if (response.ok) {
         await response.json();
+        // Invalidate TTFU query to refresh the data
+        queryClient.invalidateQueries({ queryKey: ["ttfu", resolvedParams.id] });
         router.push(`/ttfu/${resolvedParams.id}`);
       } else {
         const errorData = await response.json();
